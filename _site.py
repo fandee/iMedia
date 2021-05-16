@@ -2,6 +2,7 @@ from os import error
 import requests
 from bs4 import BeautifulSoup
 from _article import Article
+import sys
 
 
 class Site:
@@ -127,7 +128,7 @@ article_text = {}\n
                     article = Article(self.site_link+link, article_meta, article_title, article_text)
                     articles.append(article)
                     # status line
-                    print(str(int(n / len(links) * 100)) + '%')
+                    sys.stdout.write(str(int(n / len(links) * 100)) + '%\r')
                     n += 1
                 except AttributeError as e:
                     print('ELEMENT ERROR')
