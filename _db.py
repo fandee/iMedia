@@ -1,3 +1,4 @@
+from os import error
 import pyodbc
 from _site import Site
 
@@ -12,6 +13,9 @@ class DB:
         self.cursor = conn.cursor()
 
     def get_sites(self):
+        """
+        Fetch list of sites from database
+        """
         self.cursor.execute("SELECT * FROM vSites")
         sites = []
         for row in self.cursor:
@@ -28,3 +32,21 @@ class DB:
                 article_text = row[9]
             ))
         return sites
+
+    def put_articles(self, articles, day):
+        """
+        Insert articles into database
+        """
+        for article in articles:
+            try:
+                self.cursor.execute("INSERT INTO Articles VALUES ({site_id}, '{link}', '{meta}', '{title}', '{text}', '{published_date}')".format(
+                        site_id=2, 
+                        link=article.link, 
+                        meta=article.meta, 
+                        title=article.title, 
+                        text=article.text,
+                        published_date=day))
+                self.cursor.commit()
+            except error as e:
+                print(e)
+                

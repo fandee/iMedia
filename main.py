@@ -1,18 +1,24 @@
 from _db import DB
 import datetime
-from _site import Site
 
 # Create DB object and connect
 db = DB()
-# get list of all sites in database
-sites = db.get_sites()
+
+def get_articles(date):
+    """
+    Parse articles for defined date and put in database
+
+    """
+    # get list of all sites in database
+    sites = db.get_sites()
+    articles = []
+    # iterate through sites and append articles to full list
+    for site in sites:
+        print(site.site_link)
+        articles += site.parse(date)
+    # insert articles into database
+    db.put_articles(articles, date)
+
 # get date of today
 today = datetime.date.today()
-articles = []
-# iterate through sites and append articles to full list
-for site in sites:
-    print(site.site_link)
-    articles += site.parse(today)
-# print articles
-for article in articles:
-    print(article)
+get_articles(today)

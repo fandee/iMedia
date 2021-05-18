@@ -125,7 +125,10 @@ article_text = {}\n
                         except IndexError:
                             raise AttributeError
                     # new article
-                    article = Article(self.site_link+link, article_meta, article_title, article_text)
+                    article = Article(self.site_link+link, 
+                                    article_meta.replace('\n', ' ').strip(),
+                                    article_title.replace('\'', '\'\''), 
+                                    article_text.replace('\n', ' ').replace('\'', '\'\'')[:8000])
                     articles.append(article)
                     # status line
                     sys.stdout.write(str(int(n / len(links) * 100)) + '%\r')
