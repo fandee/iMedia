@@ -4,9 +4,9 @@ import datetime
 # Create DB object and connect
 db = DB()
 
-def get_articles(date):
+def save_articles(date):
     """
-    Parse articles for defined date and put in database
+    Parse articles for defined date and save in database
 
     """
     # get list of all sites in database
@@ -21,4 +21,4 @@ def get_articles(date):
 
 # get date of today
 today = datetime.date.today()
-get_articles(today)
+save_articles(today)
