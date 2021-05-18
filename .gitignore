@@ -2,3 +2,6 @@
 *.docx
 *.ldf
 *.mdf
+*.sql
+tester.py
+page.html
