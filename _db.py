@@ -1,6 +1,7 @@
 from os import error
 import pyodbc
 from _site import Site
+from _article import Article
 
 class DB:
 
@@ -50,3 +51,17 @@ class DB:
             except error as e:
                 print(e)
                 
+    def match_key(self, key):
+        """
+        Return articles with matched key-word
+        """
+        self.cursor.execute("SELECT * FROM Articles WHERE _Text LIKE '%{key}%'".format(key=key))
+        articles = []
+        for row in self.cursor:
+            articles.append(Article(
+                link=row[1],
+                meta=row[-1],
+                title=row[3],
+                text=row[4]
+            ))
+        return articles
