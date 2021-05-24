@@ -52,10 +52,36 @@ class DB:
                 self.cursor.commit()
             except pyodbc.IntegrityError as e:
                 print('UNIQUE Article link ERROR')
-                
+
+    def add_search(self, search):
+        """
+        Insert search object into DataBase
+        """
+        try:
+            self.cursor.execute("INSERT INTO Searches (SearchName) VALUES ('{search_name}')".format(search_name=search.name))
+            self.cursor.commit()
+            search_id = self.cursor.execute("SELECT IDENT_CURRENT('Searches')").fetchone()[0]
+            for key in search.keys:
+                self.cursor.execute("INSERT INTO KeyWords VALUES ({search_id}, '{key}')".format(search_id=search_id, key=key))
+                self.cursor.commit()
+            for stop in search.stops:
+                self.cursor.execute("INSERT INTO StopWords VALUES ({search_id}, '{stop}')".format(search_id=search_id, stop=stop))
+                self.cursor.commit()
+        except error as e:
+            print(e)
+
+
+    def get_searches(self):
+        searches = [Search(row[0], row[1], [], []) for row in self.cursor.execute("SELECT * FROM Searches")]
+        for search in searches:
+            search.keys = [row[0] for row in self.cursor.execute("SELECT KeyWord FROM KeyWords WHERE SearchID = {search_id}".format(search_id=search.id))]
+            search.stops = [row[0] for row in self.cursor.execute("SELECT StopWord FROM StopWords WHERE SearchID = {search_id}".format(search_id=search.id))]
+        return searches
+
+
     def process_search(self, search):
         """
-        Return articles with 
+        Return articles for the search query 
         """
         self.cursor.execute("SELECT * FROM Articles WHERE _Text LIKE '%{key}%'".format(key=key))
         articles = []
