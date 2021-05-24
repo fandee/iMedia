@@ -81,15 +81,15 @@ class DB:
 
     def process_search(self, search):
         """
-        Return articles for the search query 
+        Creating SQL query and return list of id of articles for the search's object
         """
-        self.cursor.execute("SELECT * FROM Articles WHERE _Text LIKE '%{key}%'".format(key=key))
-        articles = []
-        for row in self.cursor:
-            articles.append(Article(
-                link=row[1],
-                meta=row[-1],
-                title=row[3],
-                text=row[4]
-            ))
-        return articles
+        query = "SELECT ID FROM Articles WHERE (_Text LIKE '%{key}%'".format(key=search.keys[0])
+        for key in search.keys[1:]:
+            query += " OR _Text LIKE '%{key}%'".format(key=key)
+        query += ")"
+        if len(search.stops):
+            for stop in search.stops:
+                query += " AND _Text NOT LIKE '%{stop}%'".format(stop=stop)
+        id_list = [row[0] for row in self.cursor.execute(query)]
+        print(query)
+        return id_list
