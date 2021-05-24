@@ -1,6 +1,6 @@
 class Article:
 
-    def __init__(self, link, meta, title, text):
+    def __init__(self, site_id, link, meta, title, text):
         """
         Constructor - init Article's object vars
         :link - article's link
@@ -8,6 +8,7 @@ class Article:
         :title - article's title
         :text - article's text
         """
+        self.site_id = site_id
         self.link = link
         self.meta = meta
         self.title = title

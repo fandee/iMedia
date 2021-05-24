@@ -7,7 +7,7 @@ import sys
 
 class Site:
 
-    def __init__(self, 
+    def __init__(self, site_id, 
                 site_link, search_link, article, article_link, 
                 start, next,
                 article_main, article_title, article_meta, article_text):
@@ -24,6 +24,7 @@ class Site:
         :article_meta - CSS selector for article's metadata
         :article_text - CSS selector for article's text
         """
+        self.site_id = site_id
         self.site_link = site_link
         self.search_link=search_link
         self.article = article
@@ -41,6 +42,7 @@ class Site:
         Object's representation
         """
         return '''
+site_id = {}\n
 site_link = {}\n
 search_link = {}\n
 article = {}\n
@@ -51,7 +53,7 @@ article_main = {}\n
 article_title = {}\n
 article_meta = {}\n
 article_text = {}\n
-                '''.format(self.site_link, self.search_link, self.article, self.article_link, self.start, self.next, 
+                '''.format(self.site_id, self.site_link, self.search_link, self.article, self.article_link, self.start, self.next, 
                         self.article_main, self.article_title, self.article_meta, self.article_text)
 
     def scrape(self, date):
@@ -125,7 +127,7 @@ article_text = {}\n
                         except IndexError:
                             raise AttributeError
                     # new article
-                    article = Article(self.site_link+link, 
+                    article = Article(self.site_id, self.site_link+link, 
                                     article_meta.replace('\n', ' ').strip(),
                                     article_title.replace('\'', '\'\''), 
                                     article_text.replace('\n', ' ').replace('\'', '\'\'')[:8000])

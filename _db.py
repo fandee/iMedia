@@ -2,6 +2,7 @@ from os import error
 import pyodbc
 from _site import Site
 from _article import Article
+from _search import Search
 
 class DB:
 
@@ -21,39 +22,40 @@ class DB:
         sites = []
         for row in self.cursor:
             sites.append(Site(
-                site_link = row[0],
-                search_link = row[1],
-                article = row[2],
-                article_link = row[3],
-                start = row[4],
-                next = row[5],
-                article_main = row[6],
-                article_title = row[7],
-                article_meta = row[8],
-                article_text = row[9]
+                site_id = row[0],
+                site_link = row[1],
+                search_link = row[2],
+                article = row[3],
+                article_link = row[4],
+                start = row[5],
+                next = row[6],
+                article_main = row[7],
+                article_title = row[8],
+                article_meta = row[9],
+                article_text = row[10]
             ))
         return sites
 
-    def put_articles(self, articles, day):
+    def insert_articles(self, articles, day):
         """
         Insert articles into database
         """
         for article in articles:
             try:
                 self.cursor.execute("INSERT INTO Articles VALUES ({site_id}, '{link}', '{meta}', '{title}', '{text}', '{published_date}')".format(
-                        site_id=2, 
+                        site_id=article.site_id, 
                         link=article.link, 
                         meta=article.meta, 
                         title=article.title, 
                         text=article.text,
                         published_date=day))
                 self.cursor.commit()
-            except error as e:
-                print(e)
+            except pyodbc.IntegrityError as e:
+                print('UNIQUE Article link ERROR')
                 
-    def match_key(self, key):
+    def process_search(self, search):
         """
-        Return articles with matched key-word
+        Return articles with 
         """
         self.cursor.execute("SELECT * FROM Articles WHERE _Text LIKE '%{key}%'".format(key=key))
         articles = []

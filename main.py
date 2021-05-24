@@ -7,7 +7,6 @@ db = DB()
 def save_articles(date):
     """
     Parse articles for defined date and save in database
-
     """
     # get list of all sites in database
     sites = db.get_sites()
@@ -17,8 +16,10 @@ def save_articles(date):
         print(site.site_link)
         articles += site.parse(date)
     # insert articles into database
-    db.put_articles(articles, date)
+    db.insert_articles(articles, date)
 
 # get date of today
-today = datetime.date.today()
-save_articles(today)
+if __name__=="__main__":
+    today = datetime.date.today()
+    save_articles(today)
+
