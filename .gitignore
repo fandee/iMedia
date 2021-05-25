@@ -1,5 +1,5 @@
 .vscode/
-.__pycashe__/
+.__pycache__/
 .sql/
 *.docx
 *.ldf
