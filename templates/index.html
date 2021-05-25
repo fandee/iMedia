@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h2>Searches</h4>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Key words</th>
+        <th>Stop words</th>
+    </tr>
+    {% for search in searches %}
+    <tr>
+        <td>
+            <a href="/searches/{{search.id}}">{{search.name}}</a>
+        </td>
+        <td>{{('&').join(search.keys)}}</td>
+        <td>{{('&').join(search.stops)}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

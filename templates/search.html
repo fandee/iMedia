@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<form action="/update/{{search.id}}" method="POST">
+    <h2>ID:{{ search.id }}</h2>
+    <fieldset>
+        <label for="name"><b>Назва</b></label>
+        <input id="name" name="name" type="text" value="{{search.name}}" style="width: 100%;">
+    </fieldset>
+    <fieldset>
+        <label for="keys"><b>Key words</b></label>
+        <input id="keys" name="keys" type="text" value="{{('&'.join(search.keys))}}" style="width: 100%;">
+    </fieldset>
+    <fieldset>
+        <label for="stops"><b>Stop words</b></label>
+        <input id="stops" name="stops" type="text" value="{{('&'.join(search.stops))}}" style="width: 100%;">
+    </fieldset>
+    <button>Update</button>
+</form>
+
+<table>
+    <tr>
+        <th>SiteID</th>
+        <th>Link</th>
+        <th>Title</th>
+        <th>Meta</th>
+    </tr>
+    {% for article in articles %}
+    <tr>
+        <td>{{article.site_id}}</td>
+        <td>
+            <a href="{{article.link}}">{{article.link}}</a>
+        </td>
+        <td>{{article.title}}</td>
+        <td>{{article.meta}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

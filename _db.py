@@ -81,7 +81,7 @@ class DB:
 
     def process_search(self, search):
         """
-        Creating SQL query and return list of id of articles for the search's object
+        Creating SQL query and return list of of articles for the search
         """
         query = "SELECT ID FROM Articles WHERE (_Text LIKE '%{key}%'".format(key=search.keys[0])
         for key in search.keys[1:]:
@@ -90,6 +90,32 @@ class DB:
         if len(search.stops):
             for stop in search.stops:
                 query += " AND _Text NOT LIKE '%{stop}%'".format(stop=stop)
-        id_list = [row[0] for row in self.cursor.execute(query)]
-        print(query)
-        return id_list
+        articles_id = [row[0] for row in self.cursor.execute(query)]
+        
+        # creating list of articles
+        articles = []
+        for id in articles_id:
+            row = self.cursor.execute("SELECT SiteID, Link, Meta, Title, _Text FROM Articles WHERE ID = {id}".format(id=id)).fetchone()
+            articles.append(Article(row[0], row[1], row[2], row[3], row[4]))
+        return articles
+
+
+    def get_search(self, id):
+        row = self.cursor.execute("SELECT * FROM Searches WHERE ID = {id}".format(id=id)).fetchone()
+        search = Search(row[0], row[1], [], [])
+        search.keys = [row[0] for row in self.cursor.execute("SELECT KeyWord FROM KeyWords WHERE SearchID = {search_id}".format(search_id=search.id))]
+        search.stops = [row[0] for row in self.cursor.execute("SELECT StopWord FROM StopWords WHERE SearchID = {search_id}".format(search_id=search.id))]
+        return search
+
+    
+    def update_search(self, search):
+        self.cursor.execute("UPDATE Searches SET SearchName = '{name}' WHERE ID = {id}".format(name=search.name, id=search.id))
+        self.cursor.commit()
+        self.cursor.execute("DELETE FROM KeyWords WHERE SearchID = {id}".format(id=search.id))
+        self.cursor.execute("DELETE FROM StopWords WHERE SearchID = {id}".format(id=search.id))
+        for key in search.keys:
+            self.cursor.execute("INSERT INTO KeyWords VALUES ({search_id}, '{key}')".format(search_id=search.id, key=key))
+            self.cursor.commit()
+        for stop in search.stops:
+            self.cursor.execute("INSERT INTO StopWords VALUES ({search_id}, '{stop}')".format(search_id=search.id, stop=stop))
+            self.cursor.commit()
