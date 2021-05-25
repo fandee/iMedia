@@ -1,7 +1,8 @@
 .vscode/
+.__pycashe__/
+.sql/
 *.docx
 *.ldf
 *.mdf
-*.sql
 tester.py
 page.html
