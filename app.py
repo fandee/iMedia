@@ -1,9 +1,25 @@
 from flask import Flask, render_template, url_for, request, redirect
 from _db import DB
 from _search import Search
+import datetime
 
 app = Flask(__name__)
 db = DB() # start connection with DB
+
+def save_articles():
+    """
+    Parse articles everyday and save in database
+    """
+    date = datetime.date.today()
+    # get list of all sites in database
+    sites = db.get_sites()
+    articles = []
+    # iterate through sites and append articles to full list
+    for site in sites:
+        print(site.site_link)
+        articles += site.parse(date)
+    # insert articles into database
+    db.insert_articles(articles, date)
 
 @app.route('/')
 def index():
