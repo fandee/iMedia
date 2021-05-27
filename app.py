@@ -6,11 +6,11 @@ import datetime
 app = Flask(__name__)
 db = DB() # start connection with DB
 
-def save_articles():
+def save_articles(date):
     """
     Parse articles everyday and save in database
     """
-    date = datetime.date.today()
+    # date = datetime.date.today()
     # get list of all sites in database
     sites = db.get_sites()
     articles = []
@@ -20,6 +20,7 @@ def save_articles():
         articles += site.parse(date)
     # insert articles into database
     db.insert_articles(articles, date)
+    print('Collected ' + str(len(articles)) + ' articles')
 
 @app.route('/')
 def index():

@@ -10,7 +10,8 @@ class Site:
     def __init__(self, site_id, 
                 site_link, search_link, article, article_link, 
                 start, next,
-                article_main, article_title, article_meta, article_text):
+                article_main, article_title, article_meta, article_text,
+                one_page):
         """
         Constructor - init vars for querying websites and searching elements
         :site_link - base website link
@@ -35,6 +36,7 @@ class Site:
         self.article_title = article_title
         self.article_meta = article_meta
         self.article_text = article_text
+        self.one_page = one_page
 
 
     def __repr__(self):
@@ -62,9 +64,36 @@ article_text = {}\n
         :date - date(year, month, day) for scraping
         """
         links = []
+        # while list of articles is not empty
+        if self.one_page == True:
+            url = self.search_link.format(y=date.year, m=date.month, d=date.day)
+            # try to request url
+            try:
+                response = requests.get(url)
+                bs = BeautifulSoup(response.content, 'html.parser')
+                # get links of all articles on the page
+                list_articles = bs.select(self.article)
+                # element is not on the page
+                try:
+                    list_articles[0].select_one(self.article_link)['href']
+                    for article in list_articles:
+                        links.append(article.select_one(self.article_link)['href'])
+                # except TypeError as e:
+                except:
+                    print('###')
+                    print('_site.py: scrape(77-80)')
+                    print('URL: ' + url)
+                    print('###')
+            # except requests.exceptions.ConnectionError as e:
+            except:
+                print('###')
+                print('_site.py: scrape(71-86)')
+                print('URL: ' + url)
+                print('###')
+            print('Links:' + str(len(links)))
+            return links
         # set start page or row
         i = self.start
-        # while list of articles is not empty
         while True:
             url = self.search_link.format(y=date.year, m=date.month, d=date.day, n=i)
             # try to request url
@@ -83,14 +112,19 @@ article_text = {}\n
                     list_articles[0].select_one(self.article_link)['href']
                     for article in list_articles:
                         links.append(article.select_one(self.article_link)['href'])
-                except TypeError as e:
-                    print('ELEMENT ERROR: ' + self.article_link)
-                    print(url)
-                    print('#')
-            except requests.exceptions.ConnectionError as e:
-                print('CONNECTION ERROR')
-                print(url)
-                print('#')
+                # except TypeError as e:
+                except:
+                    print('###')
+                    print('_site.py: scrape(111-114)')
+                    print('URL: ' + url)
+                    print('###')
+            # except requests.exceptions.ConnectionError as e:
+            except:
+                print('###')
+                print('_site.py: scrape(100-120)')
+                print('URL: ' + url)
+                print('###')
+        print("Links: " + str(len(links)))
         return links
 
 
@@ -106,7 +140,11 @@ article_text = {}\n
         # link counter
         n = 0
         for link in links:
-            url = self.site_link + link
+            # bug fix
+            url = ''
+            if link[0] == '/':
+                url = self.site_link
+            url += link
             # try to request url
             try:
                 response = requests.get(url)
@@ -124,51 +162,33 @@ article_text = {}\n
                         # try to access 2-nd class
                         try:
                             article_text = article_main.select_one(self.article_text.split('|')[1]).text
-                        except IndexError:
+                        # except IndexError:
+                        except:
+                            print('###')
+                            print('_site.py: parse(163-164)')
+                            print('URL: ' + url)
+                            print('###')
                             raise AttributeError
                     # new article
-                    article = Article(self.site_id, self.site_link+link, 
-                                    article_meta.replace('\n', ' ').strip(),
+                    article = Article(self.site_id, url, 
+                                    article_meta.replace('\n', ' ').replace('\'', '\'\'').strip(),
                                     article_title.replace('\'', '\'\''), 
                                     article_text.replace('\n', ' ').replace('\'', '\'\'')[:8000])
                     articles.append(article)
                     # status line
                     sys.stdout.write(str(int(n / len(links) * 100)) + '%\r')
                     n += 1
-                except AttributeError as e:
-                    print('ELEMENT ERROR')
-                    print(url)
-                    print('#')
-                    break
-            except requests.exceptions.ConnectionError as e:
-                print('CONNECTION ERROR')
-                print(url)
-                print('#')
+                # except AttributeError as e:
+                except:
+                    print('###')
+                    print('_site.py: parse(154-180)')
+                    print('URL: ' + url)
+                    print('###')
+                    # break
+            # except requests.exceptions.ConnectionError as e:
+            except:
+                print('###')
+                print('_site.py: parse(149-186)')
+                print('URL: ' + url)
+                print('###')
         return articles
-
-
-# site_24 = Site(
-#     site_link='https://24tv.ua/',
-#     search_link='https://24tv.ua/search/search.do?searchValue=&mode=all&relevance=false&startDateFilter={y}-{m}-{d}&endDateFilter={y}-{m}-{d}&startRow={n}',
-#     list_articles='.news-list > .list > li',
-#     article_link='.news_title',
-#     start=0,
-#     next=10,
-#     article_main='.article',
-#     article_title='h1',
-#     article_meta='time',
-#     article_text='.news-content|.article_text'
-# )
-
-# site_strana = Site(
-#     site_link='https://strana.ua/',
-#     search_link='https://strana.ua/news/day={y}-{m}-{d}/page-{n}.html',
-#     list_articles='article.lenta-news',
-#     article_link='.article',
-#     start=1,
-#     next=1,
-#     article_main= 'div.article',
-#     article_title='.article',
-#     article_meta = '.article-meta',
-#     article_text = '.article-text'
-# )

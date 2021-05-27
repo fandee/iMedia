@@ -32,7 +32,8 @@ class DB:
                 article_main = row[7],
                 article_title = row[8],
                 article_meta = row[9],
-                article_text = row[10]
+                article_text = row[10],
+                one_page=row[11]
             ))
         return sites
 
@@ -41,17 +42,22 @@ class DB:
         Insert articles into database
         """
         for article in articles:
-            try:
-                self.cursor.execute("INSERT INTO Articles VALUES ({site_id}, '{link}', '{meta}', '{title}', '{text}', '{published_date}')".format(
+            query = "INSERT INTO Articles VALUES ({site_id}, '{link}', '{meta}', '{title}', '{text}', '{published_date}')".format(
                         site_id=article.site_id, 
                         link=article.link, 
                         meta=article.meta, 
                         title=article.title, 
                         text=article.text,
-                        published_date=day))
+                        published_date=day)
+            try:
+                self.cursor.execute(query)
                 self.cursor.commit()
-            except pyodbc.IntegrityError as e:
-                print('UNIQUE Article link ERROR')
+            except pyodbc.IntegrityError:
+                print('###')
+                print('IntegrityError: UNIQUE KEY')
+                print('_db.py: insert_articles(52-54)')
+                print('Query: ' + query)
+                print('###')
 
     def add_search(self, search):
         """
