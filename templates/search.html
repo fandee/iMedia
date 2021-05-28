@@ -4,20 +4,25 @@
 <form action="/update/{{search.id}}" method="POST">
     <h2>ID:{{ search.id }}</h2>
     <fieldset>
-        <label for="name"><b>Назва</b></label>
+        <label for="name"><b>Name</b></label>
         <input id="name" name="name" type="text" value="{{search.name}}" style="width: 100%;">
     </fieldset>
     <fieldset>
-        <label for="keys"><b>Key words</b></label>
+        <label for="keys">
+            <b>Key words (at least 1 word)</b>
+            <p>Example: word1<b>&</b>word2</p>
+        </label>
         <input id="keys" name="keys" type="text" value="{{('&'.join(search.keys))}}" style="width: 100%;">
     </fieldset>
     <fieldset>
-        <label for="stops"><b>Stop words</b></label>
+        <label for="stops">
+            <b>Stop words</b>
+            <p>Example: word1<b>&</b>word2</p>
+        </label>
         <input id="stops" name="stops" type="text" value="{{('&'.join(search.stops))}}" style="width: 100%;">
     </fieldset>
     <button>Update</button>
 </form>
-
 <table>
     <tr>
         <th>SiteID</th>
