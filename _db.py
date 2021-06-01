@@ -76,14 +76,12 @@ class DB:
         except error as e:
             print(e)
 
-
     def get_searches(self):
         searches = [Search(row[0], row[1], [], []) for row in self.cursor.execute("SELECT * FROM Searches")]
         for search in searches:
             search.keys = [row[0] for row in self.cursor.execute("SELECT KeyWord FROM KeyWords WHERE SearchID = {search_id}".format(search_id=search.id))]
             search.stops = [row[0] for row in self.cursor.execute("SELECT StopWord FROM StopWords WHERE SearchID = {search_id}".format(search_id=search.id))]
         return searches
-
 
     def process_search(self, search):
         """
@@ -96,12 +94,13 @@ class DB:
         if len(search.stops):
             for stop in search.stops:
                 query += " AND _Text NOT LIKE '%{stop}%'".format(stop=stop)
+        query += " ORDER BY Published DESC"
         articles_id = [row[0] for row in self.cursor.execute(query)]
         
         # creating list of articles
         articles = []
         for id in articles_id:
-            row = self.cursor.execute("SELECT SiteID, Link, Meta, Title, _Text FROM Articles WHERE ID = {id}".format(id=id)).fetchone()
+            row = self.cursor.execute("SELECT SiteID, Link, Published, Title, _Text FROM Articles WHERE ID = {id}".format(id=id)).fetchone()
             articles.append(Article(row[0], row[1], row[2], row[3], row[4]))
         return articles
 
@@ -125,3 +124,7 @@ class DB:
         for stop in search.stops:
             self.cursor.execute("INSERT INTO StopWords VALUES ({search_id}, '{stop}')".format(search_id=search.id, stop=stop))
             self.cursor.commit()
+
+
+    def delete_search(self, id):
+        self.cursor.execute("DELETE FROM Searches WHERE ID = {id}".format(id=id))

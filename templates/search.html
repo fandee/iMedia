@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<a href="/">Back to Searches</a>
 <form action="/update/{{search.id}}" method="POST">
     <h2>ID:{{ search.id }}</h2>
     <fieldset>
@@ -22,6 +23,9 @@
         <input id="stops" name="stops" type="text" value="{{('&'.join(search.stops))}}" style="width: 100%;">
     </fieldset>
     <button>Update</button>
+</form>
+<form action="/delete/{{search.id}}" method="POST">
+    <button>Delete</button>
 </form>
 <table>
     <tr>

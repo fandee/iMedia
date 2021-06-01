@@ -1,6 +1,28 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<form action="/create" method="POST">
+    <h2>New search</h2>
+    <fieldset>
+        <label for="name"><b>Name</b></label>
+        <input id="name" name="name" type="text" style="width: 100%;">
+    </fieldset>
+    <fieldset>
+        <label for="keys">
+            <b>Key words (at least 1 word)</b>
+            <p>Example: word1<b>&</b>word2</p>
+        </label>
+        <input id="keys" name="keys" type="text" style="width: 100%;">
+    </fieldset>
+    <fieldset>
+        <label for="stops">
+            <b>Stop words</b>
+            <p>Example: word1<b>&</b>word2</p>
+        </label>
+        <input id="stops" name="stops" type="text" style="width: 100%;">
+    </fieldset>
+    <button>Create</button>
+</form>
 <h2>Searches</h4>
 <table>
     <tr>
@@ -16,7 +38,6 @@
         <td>{{('&').join(search.keys)}}</td>
         <td>{{('&').join(search.stops)}}</td>
     </tr>
-    
+    {% endfor %}
 </table>
-{% endfor %}
 {% endblock %}

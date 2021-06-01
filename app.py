@@ -33,19 +33,34 @@ def search(id):
     articles = db.process_search(search)
     return render_template("search.html", search=search, articles=articles)
 
+@app.route('/create', methods=['POST'])
+def create():
+    if request.method == 'POST':
+        name = request.form['name']
+        keys = request.form['keys'].split('&')
+        stops = request.form['stops']
+        if stops:
+            stops = stops.split('&')
+        search = Search(id, name, keys, stops)
+        db.add_search(search)
+        return redirect('/')
+
 @app.route('/update/<int:id>', methods=['POST'])
 def update_search(id):
     if request.method == 'POST':
         name = request.form['name']
         keys = request.form['keys'].split('&')
-        print(keys)
         stops = request.form['stops']
         if stops:
             stops = stops.split('&')
-        print(stops)
         search = Search(id, name, keys, stops)
         db.update_search(search)
         return redirect('/searches/'+str(id))
+
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_search(id):
+    db.delete_search(id)
+    return redirect('/')
 
 if __name__=="__main__":
     app.run(debug=True)
